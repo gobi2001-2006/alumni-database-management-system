@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>User Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    body {
+      display: flex;
+    }
+    .sidebar {
+      height: 100vh;
+      width: 250px;
+      background-color: #f8f9fa;
+      padding: 20px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      border-right: 1px solid #ccc;
+    }
+    .main-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      background-color: #f8f9fa;
+    }
+    .card {
+      border-radius: 15px;
+    }
+    h2 {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #343a40;
+    }
+    .sidebar h4 {
+      margin-bottom: 20px;
+    }
+    .sidebar a {
+      display: block;
+      padding: 10px;
+      margin-bottom: 10px;
+      background-color: #e2e6ea;
+      border-radius: 5px;
+      text-decoration: none;
+      color: #000;
+    }
+    .sidebar a:hover {
+      background-color: #ced4da;
+    }
+    footer {
+      background-color: #f8f9fa;
+      padding: 10px 0;
+      text-align: center;
+    }
+    footer a {
+      color: #007bff;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
+    #searchInput {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h4>Alumni Connect</h4>
+    <a href="/user_home">Dashboard</a>
+    <a href="/add_user">Add User</a>
+    <a href="/add_alumni">Add Alumni</a>
+    <a href="/add_employment">Add Employment</a>
+    <a href="/update_alumni">Update Alumni</a>
+    <a href="/add_event">Add Event</a>
+    <a href="/logout">Logout</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+
+    <!-- Welcome Banner -->
+    <div class="text-center mb-4">
+      <h1>Welcome, {{ name }}</h1>
+      <p class="text-muted">Explore your profile, contributions, and events!</p>
+    </div>
+
+    <!-- 🔍 Search Bar -->
+    <input type="text" id="searchInput" class="form-control" placeholder="Search in Employment Table..." onkeyup="filterTable()"/>
+
+    <!-- Personal Details -->
+    <div class="card mb-4 shadow-sm">
+      <div class="card-body">
+        <h2>Personal Details</h2>
+        <table class="table table-hover">
+          <tr><th>Register Number</th><td>{{ register_number }}</td></tr>
+          <tr><th>Name</th><td>{{ name }}</td></tr>
+          <tr><th>Graduation Year</th><td>{{ graduation_year }}</td></tr>
+          <tr><th>Department</th><td>{{ department }}</td></tr>
+          <tr><th>Branch</th><td>{{ branch }}</td></tr>
+          <tr><th>Contact</th><td>{{ contact }}</td></tr>
+          <tr><th>LinkedIn</th><td><a href="{{ linkedin_id }}" target="_blank">{{ linkedin_id }}</a></td></tr>
+          <tr><th>City</th><td>{{ city }}</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Employment Details -->
+    <div class="card mb-4 shadow-sm">
+      <div class="card-body">
+        <h2>Employment History</h2>
+        <table class="table table-striped" id="employmentTable">
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th>Job Title</th>
+              <th>Past Experiences</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for job in employment %}
+            <tr>
+              <td>{{ job.company_name }}</td>
+              <td>{{ job.job_title }}</td>
+              <td>{{ job.past_experiences }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Contributions and Events -->
+    <div class="row">
+      <div class="col-md-6">
+        <div class="card mb-4 shadow-sm">
+          <div class="card-body">
+            <h2>Your Contributions</h2>
+            <canvas id="contributionsChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card mb-4 shadow-sm">
+          <div class="card-body">
+            <h2>Event Attendance</h2>
+            <canvas id="eventsChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <a href="/logout">Logout</a>
+    </footer>
+
+  </div>
+
+  <!-- ChartJS and Table Filter Script -->
+  <script>
+    const contributionsData = {
+      labels: {{ contribution_events | safe }},
+      datasets: [{
+        label: 'Contributions (₹)',
+        data: {{ contribution_amounts | safe }},
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1
+      }]
+    };
+
+    new Chart(document.getElementById('contributionsChart'), {
+      type: 'bar',
+      data: contributionsData,
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+
+    const eventsData = {
+      labels: {{ event_names | safe }},
+      datasets: [{
+        label: 'Attendance Status',
+        data: {{ event_status_counts | safe }},
+        backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)'],
+        borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'],
+        borderWidth: 1
+      }]
+    };
+
+    new Chart(document.getElementById('eventsChart'), {
+      type: 'pie',
+      data: eventsData,
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+
+    // 🔍 Filter Table Function
+    function filterTable() {
+      let input = document.getElementById("searchInput");
+      let filter = input.value.toLowerCase();
+      let table = document.getElementById("employmentTable");
+      let rows = table.getElementsByTagName("tr");
+
+      for (let i = 1; i < rows.length; i++) {
+        let row = rows[i];
+        let text = row.textContent.toLowerCase();
+        row.style.display = text.includes(filter) ? "" : "none";
+      }
+    }
+  </script>
+
+</body>
+</html>

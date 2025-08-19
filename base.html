@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Alumni Portal{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Bootstrap & FontAwesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            background-color: #007bff;
+        }
+        .navbar-brand, .nav-link, .text-white {
+            color: #fff !important;
+        }
+        .sidebar {
+            background: #343a40;
+            min-height: 100vh;
+            padding-top: 20px;
+        }
+        .sidebar a {
+            color: #ffffff;
+            display: block;
+            padding: 10px 20px;
+            text-decoration: none;
+        }
+        .sidebar a:hover {
+            background: #495057;
+        }
+        footer {
+            background-color: #e9ecef;
+            padding: 10px 0;
+            text-align: center;
+        }
+    </style>
+
+    {% block styles %}{% endblock %}
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">🎓 Alumni Portal</a>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 sidebar">
+                <a href="{{ url_for('user_home') }}"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="{{ url_for('add_alumni') }}"><i class="fas fa-user-plus"></i> Add Alumni</a>
+                <a href="{{ url_for('update_personal_details') }}"><i class="fas fa-edit"></i> Update Details</a>
+                <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-10 p-4">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Alumni Portal | Built with ❤️ by Students</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Employment Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f1f3f5;
+        }
+
+        .container {
+            max-width: 800px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+            margin-top: 60px;
+        }
+
+        h2, h3 {
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .btn {
+            width: 100%;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-control:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.25);
+        }
+
+        .list-group-item {
+            margin-bottom: 20px;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 25px;
+            background-color: #f8f9fa;
+        }
+
+        .btn-warning, .btn-danger {
+            width: 48%;
+        }
+
+        @media (max-width: 576px) {
+            .btn-warning, .btn-danger {
+                width: 100%;
+            }
+
+            .d-flex.gap-3 {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Update Employment and Past Experience Details</h2>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="mt-3">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% endwith %}
+
+        <!-- Register Number Search -->
+        <form method="GET" action="{{ url_for('update_employment_details') }}" class="my-4">
+            <div class="input-group">
+                <input type="text" class="form-control" name="register_number" placeholder="Enter Register Number" value="{{ register_number or '' }}" required autofocus>
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+        </form>
+
+        <!-- Employment Records -->
+        {% if combined_records %}
+            <h3 class="mt-4">Records for Register Number: {{ register_number }}</h3>
+            <ul class="list-group mt-4">
+                {% for record in combined_records %}
+                <li class="list-group-item">
+                    <form method="POST" action="{{ url_for('update_employment_details', register_number=register_number) }}">
+                        <div class="mb-3">
+                            <label for="employment_id_{{ record[0] }}" class="form-label">Employment ID</label>
+                            <input type="text" class="form-control" id="employment_id_{{ record[0] }}" name="employment_id" value="{{ record[0] }}" readonly>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="company_name_{{ record[0] }}" class="form-label">Company Name</label>
+                            <input type="text" class="form-control" id="company_name_{{ record[0] }}" name="company_name" value="{{ record[1] }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="job_title_{{ record[0] }}" class="form-label">Job Title</label>
+                            <input type="text" class="form-control" id="job_title_{{ record[0] }}" name="job_title" value="{{ record[2] }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="past_experiences_{{ record[0] }}" class="form-label">Past Experiences</label>
+                            <input type="text" class="form-control" id="past_experiences_{{ record[0] }}" name="past_experiences" value="{{ record[3] }}">
+                        </div>
+
+                        <div class="d-flex gap-3">
+                            <button type="submit" name="action" value="update_employment" class="btn btn-warning">Update</button>
+                            <button type="submit" name="action" value="delete_employment" class="btn btn-danger">Delete</button>
+                        </div>
+                    </form>
+                </li>
+                {% endfor %}
+            </ul>
+        {% elif register_number %}
+            <p class="text-center mt-4 text-muted">No records found for Register Number: <strong>{{ register_number }}</strong></p>
+        {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

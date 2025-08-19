@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Contributions</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(to right, #f8f9fa, #e9ecef);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 700px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+            padding: 30px 25px;
+            margin-top: 60px;
+        }
+
+        h2 {
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-control:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        }
+
+        .btn-success {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn-danger {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .alert {
+            font-size: 0.95rem;
+        }
+
+        .input-group input {
+            border-radius: 5px 0 0 5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin-top: 30px;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Update Contribution Details</h2>
+
+    <!-- Search by Register Number -->
+    <form method="GET" action="{{ url_for('update_contributions_details') }}" class="mb-4">
+        <div class="input-group">
+            <input type="text" class="form-control" name="register_number" placeholder="Enter Register Number" value="{{ register_number or '' }}" required>
+            <button class="btn btn-primary" type="submit">Search</button>
+        </div>
+    </form>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="mt-2">
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- Contribution Form -->
+    {% if contribution_record %}
+    <form method="POST">
+        <input type="hidden" name="register_number" value="{{ register_number }}">
+
+        <div class="mb-3">
+            <label for="contribution_id" class="form-label">Contribution ID</label>
+            <input type="text" class="form-control" id="contribution_id" name="contribution_id" value="{{ contribution_record[0] }}" readonly>
+        </div>
+
+        <div class="mb-3">
+            <label for="amount" class="form-label">Amount</label>
+            <input type="number" step="0.01" class="form-control" id="amount" name="amount" value="{{ contribution_record[2] }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="date" class="form-label">Date</label>
+            <input type="date" class="form-control" id="date" name="date" value="{{ contribution_record[3] }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="event_id" class="form-label">Event ID</label>
+            <input type="text" class="form-control" id="event_id" name="event_id" value="{{ contribution_record[4] }}">
+        </div>
+
+        <button type="submit" class="btn btn-success">Update Contribution</button>
+        <button type="submit" name="delete" value="true" class="btn btn-danger">Delete Contribution</button>
+    </form>
+    {% else %}
+        <p class="text-center mt-4 text-muted">No record found for Register Number: <strong>{{ register_number }}</strong></p>
+    {% endif %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
